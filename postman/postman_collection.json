@@ -1,0 +1,217 @@
+{
+	"info": {
+		"_postman_id": "61b3034b-c5d2-48c1-8799-29a5de3eedc0",
+		"name": "Inventory_Management_Tool",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29254741"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n  \"username\": \"testuser\",\r\n  \"password\": \"securePassword123!\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"testuser\",\r\n  \"password\": \"securePassword123!\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddProduct",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODgyNDQ0NGZiZGQ5ZmY3OGQxNTdmNmYiLCJpYXQiOjE3NTMzNjc2NzQsImV4cCI6MTc1MzQ1NDA3NH0.VNbEIlUYO1V00M9Tk2GdOU1GWBSpRfX7a4wJ-iILHWs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Mouse\",\r\n  \"type\": \"electronics\",\r\n  \"sku\": \"MOUSE-123\",\r\n  \"quantity\": 100,\r\n  \"price\": 25.99,\r\n  \"description\": \"Wireless mouse\",\r\n  \"image_url\": \"https://example.com/mouse.jpg\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_Product_Quantity",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODgyNDQ0NGZiZGQ5ZmY3OGQxNTdmNmYiLCJpYXQiOjE3NTMzNjc2NzQsImV4cCI6MTc1MzQ1NDA3NH0.VNbEIlUYO1V00M9Tk2GdOU1GWBSpRfX7a4wJ-iILHWs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"quantity\": 786\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/products/68824568fbdd9ff78d157f74/quantity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						"68824568fbdd9ff78d157f74",
+						"quantity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_All_Products",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODgyNDQ0NGZiZGQ5ZmY3OGQxNTdmNmYiLCJpYXQiOjE3NTMzNjc2NzQsImV4cCI6MTc1MzQ1NDA3NH0.VNbEIlUYO1V00M9Tk2GdOU1GWBSpRfX7a4wJ-iILHWs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_All_Product_Pagination",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODgyNDQ0NGZiZGQ5ZmY3OGQxNTdmNmYiLCJpYXQiOjE3NTMzNjc2NzQsImV4cCI6MTc1MzQ1NDA3NH0.VNbEIlUYO1V00M9Tk2GdOU1GWBSpRfX7a4wJ-iILHWs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products/advanced?type=electronics&page=1&sortBy=price",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						"advanced"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "electronics"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "sortBy",
+							"value": "price"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

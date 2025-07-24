@@ -1,0 +1,44 @@
+{
+  "name": "inventory-management-tool",
+  "version": "1.0.0",
+  "description": "A backend API tool to manage inventory for a small business.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/4kasa786/Inventory-Management-Tool.git"
+  },
+  "author": "4kasa786 <alkabhoyar01@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/4kasa786/Inventory-Management-Tool/issues"
+  },
+  "homepage": "https://github.com/4kasa786/Inventory-Management-Tool#readme",
+  "keywords": [
+    "inventory",
+    "backend",
+    "express",
+    "api",
+    "nodejs",
+    "mongodb"
+  ],
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.16.4",
+    "zod": "^4.0.8"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "nodemon": "^3.1.10"
+  }
+}

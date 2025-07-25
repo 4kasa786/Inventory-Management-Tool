@@ -32,29 +32,27 @@ A backend API for managing inventory data with user authentication, product mana
 
 ```
 inventory-management-api/
-├── src/
-│   ├── config/
-│   │   ├── database.js
-│   │   └── env.js
-│   ├── controllers/
-│   │   ├── auth.controller.js
-│   │   └── product.controller.js
-│   ├── database/
-│   │   └── mongodb.js
-│   ├── middlewares/
-│   │   ├── auth.middleware.js
-│   │   ├── error.middleware.js
-│   │   └── validate.js
-│   ├── models/
-│   │   ├── user.model.js
-│   │   └── product.model.js
-│   ├── routes/
-│   │   ├── auth.routes.js
-│   │   └── product.routes.js
-│   ├── validators/
-│   │   ├── auth.validation.js
-│   │   └── product.validation.js
-│   └── app.js
+├── config/
+│   ├── database.js
+│   └── env.js
+├── controllers/
+│   ├── auth.controller.js
+│   └── product.controller.js
+├── database/
+│   └── mongodb.js
+├── middlewares/
+│   ├── auth.middleware.js
+│   ├── error.middleware.js
+│   └── validate.js
+├── models/
+│   ├── user.model.js
+│   └── product.model.js
+├── routes/
+│   ├── auth.routes.js
+│   └── product.routes.js
+├── validators/
+│   ├── auth.validation.js
+│   └── product.validation.js
 ├── postman/
 │   └── postman_collection.json
 ├── .env.example
@@ -62,7 +60,9 @@ inventory-management-api/
 ├── .env
 ├── .gitignore
 ├── package.json
-└── README.md
+├── README.md
+└── app.js
+
 ```
 
 ---

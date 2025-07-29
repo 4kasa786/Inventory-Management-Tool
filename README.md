@@ -2,6 +2,8 @@
 
 A backend API for managing inventory data with user authentication, product management (CRUD), and optional analytics.
 
+---
+
 ## 🚀 Tech Stack
 
 * Node.js
@@ -9,6 +11,7 @@ A backend API for managing inventory data with user authentication, product mana
 * MongoDB + Mongoose
 * JWT Authentication
 * Zod (for request validation)
+* Docker (for containerization)
 
 ---
 
@@ -31,7 +34,7 @@ A backend API for managing inventory data with user authentication, product mana
 ## 📁 Folder Structure
 
 ```
-inventory-management-api/
+Inventory-Management-Tool-main/
 ├── config/
 │   ├── database.js
 │   └── env.js
@@ -56,14 +59,91 @@ inventory-management-api/
 ├── postman/
 │   └── postman_collection.json
 ├── .env.example
-├── test_api.py
 ├── .env
 ├── .gitignore
+├── .dockerignore
+├── Dockerfile
+├── docker-compose.yml
 ├── package.json
 ├── README.md
 └── app.js
+```
+
+---
+
+## 🐳 Docker Support
+
+### 📦 Dockerfile
+
+Defines the Docker image for your Node.js app:
+
+```Dockerfile
+FROM node:18
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+### 📦 docker-compose.yml
+
+Defines a multi-container app (App + MongoDB):
+
+```yaml
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    restart: always
+
+  mongo:
+    image: mongo
+    container_name: inventory-mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:
+```
+
+### 📁 .dockerignore
+
+Prevents unnecessary files from being added to the Docker image:
 
 ```
+node_modules
+npm-debug.log
+.env
+.git
+```
+
+---
+
+## 🥪 Environment Configuration
+
+Edit the `.env` file with your configuration:
+
+```env
+PORT=3000
+DB_URI=mongodb://mongo:27017/inventorydb
+JWT_SECRET="The God and the Parents and the Teachers and Everyone should always be Respected"
+JWT_EXPIRES_IN=1d
+NODE_ENV=development
+```
+
+> 💡 Note: You shouldn't commit `.env` to GitHub.
 
 ---
 
@@ -81,8 +161,6 @@ inventory-management-api/
 }
 ```
 
-* **Response:** Confirmation of user creation
-
 ### 🔸 Login
 
 * **POST** `/login`
@@ -95,27 +173,21 @@ inventory-management-api/
 }
 ```
 
-* **Response:** JWT token
-
 ### 🔸 Logout
 
 * **POST** `/logout`
-* **Response:** Logout confirmation
 
 ---
 
 ## 📦 Product Endpoints (Protected)
 
-🔐 **Requires Bearer Token** in `Authorization` header:
-
-```
-Authorization: Bearer <your-token>
-```
+> Requires Bearer Token in `Authorization` header:
+>
+> `Authorization: Bearer <your-token>`
 
 ### 🔹 Add Product
 
 * **POST** `/products`
-* **Body:**
 
 ```json
 {
@@ -129,12 +201,9 @@ Authorization: Bearer <your-token>
 }
 ```
 
-* **Response:** Product ID and confirmation
-
-### 🔹 Update Product Quantity
+### 🔹 Update Quantity
 
 * **PUT** `/products/:productId/quantity`
-* **Body:**
 
 ```json
 {
@@ -142,113 +211,53 @@ Authorization: Bearer <your-token>
 }
 ```
 
-* **Response:** Updated product details
-
 ### 🔹 Get All Products
 
 * **GET** `/products`
-* **Response:**
 
-```json
-{
-  "success": true,
-  "message": "Products fetched successfully",
-  "data": [
-    {
-      "_id": "64c8...",
-      "name": "Product A",
-      "type": "electronics",
-      "sku": "SKU-001",
-      "quantity": 20,
-      "price": 99.99
-    },
-    {
-      "_id": "64c8...",
-      "name": "Product B",
-      "type": "grocery",
-      "sku": "SKU-002",
-      "quantity": 40,
-      "price": 9.99
-    }
-  ]
-}
-```
-
-### 🔹 Get Products with Pagination & Filter
+### 🔹 Get with Pagination & Filter
 
 * **GET** `/products?type=electronics&page=1&sortBy=price`
-* **Response:**
-
-```json
-{
-  "success": true,
-  "message": "Products fetched successfully",
-  "data": {
-    "products": [
-      {
-        "_id": "64c8...",
-        "name": "Product A",
-        "type": "electronics",
-        "price": 99.99
-      }
-    ],
-    "page": 1,
-    "limit": 10,
-    "totalPages": 5,
-    "totalCount": 50
-  }
-}
-```
 
 ---
 
-## 🥪 Environment Configuration
+## 🤪 API Testing (Postman)
 
-Edit the `.env` file with your configuration:
+Import `postman/postman_collection.json` and test:
 
-```env
-PORT=
-DB_URI=
-JWT_SECRET=
-JWT_EXPIRES_IN=
-NODE_ENV=development
-```
+* `/register`
+* `/login`
+* `/products` (POST)
+* `/products/:id/quantity`
+* `/products?type=...`
 
 ---
 
-## 🪪 API Testing with Postman
+## 🛠️ Running the App
 
-Import the following collection into Postman:
-📁 [`postman/postman_collection.json`](./postman/postman_collection.json)
-
-You can test:
-
-* ✅ `/register`
-* ✅ `/login`
-* ✅ `/products` (Add product)
-* ✅ `/products/:productId/quantity`
-* ✅ `/products`
-* ✅ `/products?type=...&page=...`
-
-Make sure to include the Bearer token (from login) in all protected requests.
-
----
-
-## 🏁 Getting Started
-
-1. Clone the repository
-2. Install dependencies:
+### Option 1: Local (Without Docker)
 
 ```bash
 npm install
-```
-
-3. Create `.env` file based on `.env.example`
-4. Run MongoDB and start the server:
-
-```bash
+cp .env.example .env
 npm start
 ```
+
+### Option 2: Dockerized
+
+```bash
+docker-compose up --build
+```
+
+---
+
+## 🔖 Schema Highlights
+
+* Unique SKU
+* Non-negative quantity/price
+* User-product linkage
+* Regex URL validation
+* Zod-based schema validation
 
 ---
 
@@ -258,14 +267,4 @@ For queries or contributions, feel free to open an issue or contact the maintain
 
 ---
 
-## 🔖 Schema Features
-
-* Validation Rules
-* Data Normalization
-* URL Validation (Regex)
-* User-Product Relationship
-* Unique SKU & Non-negative values
-
----
-
-🛠️ Built with love by Sarvesh Kishor Bhoyar
+🛠️ Built with love by **Sarvesh Kishor Bhoyar**

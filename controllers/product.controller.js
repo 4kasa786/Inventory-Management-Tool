@@ -1,71 +1,56 @@
 import Product from '../models/product.model.js';
+import topKManager from '../utils/TopKProducts.js';
 
 export const addProduct = async (req, res, next) => {
     try {
         const { name, type, sku, image_url, description, quantity, price } = req.body;
 
-        // Check if product with same SKU exists
         const existingProduct = await Product.findOne({ sku });
         if (existingProduct) {
-            return res.status(409).json({
-                error: 'Product with this SKU already exists'
-            });
+            return res.status(409).json({ error: 'Product with this SKU already exists' });
         }
 
-
         const userId = req.user._id;
+
         const product = new Product({
-            name,
-            type,
-            sku,
-            image_url,
-            description,
-            quantity,
-            price,
-            createdBy: userId, // assuming your auth middleware sets req.user.userId
+            name, type, sku, image_url, description, quantity, price, createdBy: userId
         });
 
         const savedProduct = await product.save();
 
-        // Return format expected by test script
+
+        topKManager.addOrUpdate(savedProduct._id.toString(), quantity);
+
         res.status(201).json({
             message: 'Product created successfully',
             product_id: savedProduct._id,
         });
-
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const updateProductQuantity = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { quantity } = req.body;
 
-        // Validate quantity
         if (quantity === undefined || quantity < 0) {
-            return res.status(400).json({
-                error: 'Valid quantity required'
-            });
+            return res.status(400).json({ error: 'Valid quantity required' });
         }
 
         const updatedProduct = await Product.findByIdAndUpdate(
             id,
             { quantity },
-            {
-                new: true,
-                runValidators: true
-            }
+            { new: true, runValidators: true }
         );
 
         if (!updatedProduct) {
-            return res.status(404).json({
-                error: 'Product not found'
-            });
+            return res.status(404).json({ error: 'Product not found' });
         }
 
-        // Return format expected by test script
+        topKManager.addOrUpdate(id.toString(), quantity);
+
         res.status(200).json({
             message: 'Quantity updated successfully',
             product_id: updatedProduct._id,
@@ -75,19 +60,57 @@ export const updateProductQuantity = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
+
+
+export const deleteProduct = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const deleted = await Product.findByIdAndDelete(id);
+        if (!deleted) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        topKManager.remove(id.toString());
+
+        res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+export const getTopProducts = async (req, res, next) => {
+    try {
+        const topIds = topKManager.getTopK();
+        const products = await Product.find({ _id: { $in: topIds } });
+
+        const idToProduct = Object.fromEntries(
+            products.map(p => [p._id.toString(), p])
+        );
+
+        const ordered = topIds.map(id => {
+            const product = idToProduct[id];
+            return product
+                ? { product_id: id, ...product._doc }
+                : { product_id: id, error: 'Product not found in DB' };
+        });
+
+        res.status(200).json(ordered);
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 export const getProducts = async (req, res, next) => {
     try {
-        // For test compatibility, return simple array without pagination
-        // You can add pagination back later or make it optional
-
         const products = await Product.find()
             .sort({ createdAt: -1 })
             .select('_id name type sku image_url description quantity price createdAt updatedAt');
 
-        // Transform the response to match test expectations
-        const formattedProducts = products.map(product => ({
+        const formatted = products.map(product => ({
             product_id: product._id,
             name: product.name,
             type: product.type,
@@ -100,13 +123,11 @@ export const getProducts = async (req, res, next) => {
             updated_at: product.updatedAt
         }));
 
-        // Return simple array format expected by test script
-        res.status(200).json(formattedProducts);
-
+        res.status(200).json(formatted);
     } catch (error) {
         next(error);
     }
-}
+};
 
 
 export const getProductsAdvanced = async (req, res, next) => {
@@ -123,9 +144,7 @@ export const getProductsAdvanced = async (req, res, next) => {
         const skip = (page - 1) * limit;
         const filter = {};
 
-        if (type) {
-            filter.type = type;
-        }
+        if (type) filter.type = type;
 
         if (search) {
             filter.$or = [
@@ -171,4 +190,36 @@ export const getProductsAdvanced = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
+
+
+export const getTopKStatus = async (req, res, next) => {
+    try {
+        const status = topKManager.getStatus();
+        res.status(200).json(status);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const rebuildTopK = async (req, res, next) => {
+    try {
+        const topProducts = await Product.find({})
+            .sort({ quantity: -1 })
+            .limit(20); // can be more than K
+
+        const topData = topProducts.map(p => ({
+            id: p._id.toString(),
+            quantity: p.quantity
+        }));
+
+        topKManager.rebuildFromData(topData);
+
+        res.status(200).json({
+            message: 'Top K cache rebuilt successfully',
+            topK_ids: topKManager.getTopK(),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
